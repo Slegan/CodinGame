@@ -1,0 +1,114 @@
+/**
+ * Auto-generated code below aims at helping you parse
+ * the standard input according to the problem statement.
+ **/
+let XXX=0;
+let XXL=0;
+let XXR=0;
+let YYY=0;
+let YYY1=0;
+let YYY2=0;
+var surfaceN = parseInt(readline()); // the number of points used to draw the surface of Mars.
+for (var i = 0; i < surfaceN; i++) {
+    var inputs = readline().split(' ');
+    var landX = parseInt(inputs[0]); // X coordinate of a surface point. (0 to 6999)
+    var landY = parseInt(inputs[1]); // Y coordinate of a surface point. By linking all the points together in a sequential fashion, you form the surface of Mars.
+    // определение точки высатки
+
+    YYY1=landY;
+    if(YYY1===YYY2){
+        XXR=landX;
+        YYY=landY;
+        XXL=XXX;
+        }
+    YYY2=landY;
+    XXX=landX;
+
+}
+let resultP=0;
+let resultR=0;
+let MaxSpeedX=0;
+let rotateLend=0;
+
+dragX = (hSpeed) =>{
+    if(hSpeed<MaxSpeedX){
+        return resultR=-rotateLend;
+    }else
+    if(hSpeed>MaxSpeedX){
+        return resultR=rotateLend;
+    }else return resultR=0;
+};
+
+flying =(Y) =>{
+    if(Y<2800){
+        resultP=4;
+    } else resultP=3;
+    printErr(Y);
+};
+
+lending = (vSpeed,Y) =>{
+    if(Math.abs(vSpeed)<38){
+            resultP=1;
+            }
+        else resultP=4;
+    if(Y<YYY+250){
+        resultR=0;
+        }
+};
+setSpeed = (hSpeed) =>{
+    printErr(hSpeed);
+    rotateLend=(hSpeed===0 && (X>XXR || X<XXL))? 20 : -20;
+    printErr(rotateLend);
+};
+
+
+// game loop
+while (true) {
+    var inputs = readline().split(' ');
+    var X = parseInt(inputs[0]);
+    var Y = parseInt(inputs[1]);
+    var hSpeed = parseInt(inputs[2]); // the horizontal speed (in m/s), can be negative.
+    var vSpeed = parseInt(inputs[3]); // the vertical speed (in m/s), can be negative.
+    var fuel = parseInt(inputs[4]); // the quantity of remaining fuel in liters.
+    var rotate = parseInt(inputs[5]); // the rotation angle in degrees (-90 to 90).
+    var power = parseInt(inputs[6]); // the thrust power (0 to 4).
+
+    // Write an action using print()
+    // To debug: printErr('Debug messages...');
+    if(X>XXR){
+        MaxSpeedX=-30;
+        rotateLend=20;
+        resultP=4;
+        flying(Y);
+        dragX(hSpeed);
+        setSpeed(hSpeed);
+
+    }else if(X<XXL){
+        MaxSpeedX=30;
+        rotateLend=20;
+        resultP=4;
+        dragX(hSpeed);
+        setSpeed(hSpeed);
+
+    }else if(X>XXL && X<XXR){
+        MaxSpeedX=0;
+        rotateLend=30;
+        resultP=4;
+        dragX(hSpeed);
+        if(Math.abs(hSpeed)<20)
+        {
+            lending(vSpeed,Y);
+        }
+
+    }
+
+
+
+    result=resultR+' '+resultP;
+    // rotate power. rotate is the desired rotation angle. power is the desired thrust power.
+    print(result);
+}
+
+const racingX = (hSpeed, X) =>{
+
+};

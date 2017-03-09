@@ -1,0 +1,219 @@
+/**
+ * Auto-generated code below aims at helping you parse
+ * the standard input according to the problem statement.
+ **/
+let XXX2=0;
+let XXX1=0;
+let XXL=0;//coord land place X-left
+let XXR=0;//coord land place X-right
+let YYY=0;// coord land place Y
+let YYY1=0;
+let YYY2=0;
+let YYYMax=0;
+
+let XXfall1=0; // coor fall place
+let XXfall2=0;// coor fall place
+let YYfall1=0;// coor fall place
+let YYfall2=0;// coor fall place
+let YYbadMin=0; // coord ground over land place
+let YYbadMax=0;// coord ground over land place
+let YMassiv=[];
+let XMassiv=[];
+let iMassiv=0;
+
+var surfaceN = parseInt(readline()); // the number of points used to draw the surface of Mars.
+for (var i = 0; i < surfaceN; i++) {
+    var inputs = readline().split(' ');
+    var landX = parseInt(inputs[0]); // X coordinate of a surface point. (0 to 6999)
+    var landY = parseInt(inputs[1]); // Y coordinate of a surface point. By linking all the points together in a sequential fashion, you form the surface of Mars.
+    // внесение всех точек в массив
+    iMassiv=surfaceN;
+    YMassiv.push(landY);
+    XMassiv.push(landX);
+
+}
+
+for (var i = 0; i < iMassiv; i++) { //определение координат посадочной площадки
+    YYY1=YMassiv[i];
+    XXX1=XMassiv[i];
+    if(YYY1===YYY2){
+        XXR=XMassiv[i];
+        YYY=YMassiv[i];
+        XXL=XXX2;
+        }
+    YYY2=YMassiv[i];
+    XXX2=XMassiv[i];
+    if(YYYMax<YYY1){
+        YYYMax=YYY1;
+        }
+}
+YYbadMin=YYYMax;
+for (var i = 0; i < iMassiv; i++) {    //определение навеса над посадочной площадкой
+    YYY1=YMassiv[i];
+    XXX1=XMassiv[i];
+
+    if(XXX1>XXL && XXX1<XXR && YYY1!==YYY){
+        if(YYbadMax<YYY1){
+            YYbadMax=YYY1;
+        }
+        if(YYbadMin>YYY1){
+            YYbadMin=YYY1;
+        }
+    }
+}
+
+if(YYbadMin===YYYMax){ //проверка на отсуствие навеса над посадочной площадкой
+        YYbadMin=0;
+        printErr(YYbadMin);
+}
+    YYY2=0;
+    XXX2=0;
+for (var i = 0; i < iMassiv; i++) {    //опеределение площадки снижения, вообще  надо было бы прекрутить проверку потолка над площадкой снижекнния но тут пока и так хватит
+    YYY1=YMassiv[i];
+    XXX1=XMassiv[i];
+
+    if((XXX1===XXL || XXX2===XXR) && (YYY1===YYY || YYY2===YYY) && (XXX2+300)<=XXX1){
+        XXfall1=XXX2;
+        XXfall2=XXX1;
+        YYfall1=YYY2;
+        YYfall2=YYY1;
+        }
+    YYY2=YMassiv[i];
+    XXX2=XMassiv[i];
+}
+
+
+let resultP=0;
+let resultR=0;
+let MaxSpeedX=0;
+let rotateLend=0;
+
+dragX = (hSpeed) =>{
+    if(hSpeed<MaxSpeedX){
+        return resultR=-rotateLend;
+    }else
+    if(hSpeed>MaxSpeedX){
+        return resultR=rotateLend;
+    }else return resultR=0;
+    printErr('dragX');
+};
+
+flying =(Y,vSpeed) =>{
+    if(Y<YYYMax+100 && XXR>XXfall2){
+        resultP=4;
+    }else if(Y>YYYMax+600){
+        resultP=3;
+    }else if(vSpeed<-15){
+            resultP=4;
+    } else resultP=3;
+    printErr('flying');
+};
+
+lending = (vSpeed,Y) =>{
+    if(Math.abs(vSpeed)<38){
+            resultP=3;
+            }
+        else resultP=4;
+    if(hSpeed<1 && Y<(YYbadMin-300)){
+        resultR=0;
+        }
+        printErr('lending');
+
+};
+setSpeed = (hSpeed) =>{
+     rotateLend=(hSpeed===0 && (X>XXR || X<XXL))? 20 : -20;
+     printErr('setSpeed');
+};
+setY = (Y) =>{
+    printErr(YYYMax);
+    if(Y<YYYMax){
+        rotateLend= (X>XXR)? 10:-10;
+    }
+    printErr('setY');
+};
+
+
+// game loop
+while (true) {
+    var inputs = readline().split(' ');
+    var X = parseInt(inputs[0]);
+    var Y = parseInt(inputs[1]);
+    var hSpeed = parseInt(inputs[2]); // the horizontal speed (in m/s), can be negative.
+    var vSpeed = parseInt(inputs[3]); // the vertical speed (in m/s), can be negative.
+    var fuel = parseInt(inputs[4]); // the quantity of remaining fuel in liters.
+    var rotate = parseInt(inputs[5]); // the rotation angle in degrees (-90 to 90).
+    var power = parseInt(inputs[6]); // the thrust power (0 to 4).
+
+    // Write an action using print()
+    // To debug: printErr('Debug messages...');
+    if (X>XXfall1 && X<XXfall2 && Y<YYbadMin){
+        if(X>XXR){
+            MaxSpeedX=-15;
+        }else MaxSpeedX=15;
+        rotateLend=30;
+        resultP=4;
+
+        dragX(hSpeed);
+        setSpeed(hSpeed);
+         printErr('X>XXfall1 && X<XXfall2 && Y<YYbadMin');
+
+
+    }else if (X>XXfall1 && X<XXfall2 && Y>YYbadMin){
+        MaxSpeedX=0;
+        rotateLend=30;
+        resultP=4;
+        dragX(hSpeed);
+        if(Math.abs(hSpeed)<20)
+        {
+            lending(vSpeed,Y);
+        }
+            printErr('X>XXfall1 && X<XXfall2 && Y>YYbadMin');
+
+    }else if(X>XXR){
+        MaxSpeedX=-30;
+        rotateLend=20;
+        resultP=4;
+        setY(Y);
+        flying(Y,vSpeed);
+        dragX(hSpeed);
+        setSpeed(hSpeed);
+            printErr('X>XXR');
+
+    }else if(X<XXL){
+        MaxSpeedX=30;
+        rotateLend=20;
+        resultP=4;
+        setY(Y);
+        flying(Y,vSpeed);
+        dragX(hSpeed);
+        setSpeed(hSpeed,Y);
+        printErr('X<XXL');
+
+    }else if(X>XXL && X<XXR && Y<YYbadMin){
+        MaxSpeedX=1;
+        rotateLend=15;
+        resultP=4;
+        dragX(hSpeed);
+        if(Math.abs(hSpeed)<20)
+        {
+            lending(vSpeed,Y);
+        }
+        printErr('X>XXL && X<XXR && Y<YYbadMin');
+
+    } else if(X>XXL && X<XXR && Y>YYbadMax){
+        MaxSpeedX=30;
+        rotateLend=30;
+        resultP=4;
+        flying(Y,vSpeed);
+         printErr('X>XXL && X<XXR && Y>YYbadMax');
+    }
+
+
+    result=resultR+' '+resultP;
+    // rotate power. rotate is the desired rotation angle. power is the desired thrust power.
+    print(result);
+}
+
+const racingX = (hSpeed, X) =>{
+
+};
